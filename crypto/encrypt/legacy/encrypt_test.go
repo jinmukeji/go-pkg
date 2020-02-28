@@ -19,7 +19,8 @@ func (suite *EncrypltTestTestSuite) TestEncrypt() {
 	encryptedText := h.Encrypt("a1234567", "a123", "jinmuid")
 	suite.T().Log(encryptedText)
 
-	decryptedTest := h.Decrypt(encryptedText, "a123", "jinmuid")
+	decryptedTest, err := h.Decrypt(encryptedText, "a123", "jinmuid")
+	suite.NoError(err)
 	suite.T().Log(decryptedTest)
 	assert.Equal(t, "a1234567", decryptedTest)
 }
@@ -28,7 +29,8 @@ func (suite *EncrypltTestTestSuite) TestEncrypt() {
 func (suite *EncrypltTestTestSuite) TestDecrypt() {
 	t := suite.T()
 	h := NewPasswordCipherHelper()
-	plainText := h.Decrypt("GQv9wl3NP5CPDr1qbiZ+/WwInNSVDRE7yMM=", "3LaO", "jinmuid")
+	plainText, err := h.Decrypt("GQv9wl3NP5CPDr1qbiZ+/WwInNSVDRE7yMM=", "3LaO", "jinmuid")
+	suite.NoError(err)
 	suite.T().Log(plainText)
 	assert.Equal(t, "123456789a", plainText)
 }
@@ -37,7 +39,8 @@ func (suite *EncrypltTestTestSuite) TestDecrypt() {
 func (suite *EncrypltTestTestSuite) TestDecrypt2() {
 	t := suite.T()
 	h := NewPasswordCipherHelper()
-	plainText := h.Decrypt("8jp4+6HR+ktnp0vV5/kcZ6C3XlZhBmjLoCA=", "Keg2", "aLGGjPzg7My5Kxv0s9hC")
+	plainText, err := h.Decrypt("8jp4+6HR+ktnp0vV5/kcZ6C3XlZhBmjLoCA=", "Keg2", "aLGGjPzg7My5Kxv0s9hC")
+	suite.NoError(err)
 	suite.T().Log(plainText)
 	assert.Equal(t, "hengyang73", plainText)
 }

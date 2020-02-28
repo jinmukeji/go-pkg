@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"io"
 )
 
@@ -15,7 +16,7 @@ type DefaultPasswordCipherHelper struct {
 
 type PasswordCipherHelper interface {
 	Encrypt(str, seed, key string) string
-	Decrypt(encryptedStr, seed, key string) string
+	Decrypt(encryptedStr, seed, key string) (string, error)
 }
 
 func NewPasswordCipherHelper() PasswordCipherHelper {
@@ -28,9 +29,13 @@ func (client DefaultPasswordCipherHelper) Encrypt(str, seed, key string) string 
 }
 
 // Decrypt 解密算法
-func (client DefaultPasswordCipherHelper) Decrypt(encrypted, seed, key string) string {
+func (client DefaultPasswordCipherHelper) Decrypt(encrypted, seed, key string) (string, error) {
 	encryptedPassword, _ := base64.StdEncoding.DecodeString(encrypted)
-	return string(AESDecrypt([]byte(encryptedPassword), []byte(key+seed)))
+	text, err := AESDecrypt([]byte(encryptedPassword), []byte(key+seed))
+	if err != nil {
+		return "", err
+	}
+	return string(text), nil
 }
 
 // AESEncrypt aes中的CFB加密
@@ -54,16 +59,16 @@ func AESEncrypt(src []byte, key []byte) (ciphertext []byte) {
 }
 
 // AESDecrypt aes中的CFB解密
-func AESDecrypt(ciphertext []byte, key []byte) (plaintext []byte) {
+func AESDecrypt(ciphertext []byte, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(generateKey(key))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// The IV needs to be unique, but not secure. Therefore it's common to
 	// include it at the beginning of the ciphertext.
 	if len(ciphertext) < aes.BlockSize {
-		panic("ciphertext too short")
+		return nil, errors.New("ciphertext too short")
 	}
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
@@ -72,7 +77,7 @@ func AESDecrypt(ciphertext []byte, key []byte) (plaintext []byte) {
 
 	// XORKeyStream can work in-place if the two arguments are the same.
 	stream.XORKeyStream(ciphertext, ciphertext)
-	return ciphertext
+	return ciphertext, nil
 }
 
 // generateKey key扩充到32位
