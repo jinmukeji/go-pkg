@@ -8,28 +8,26 @@ export GOPRIVATE := github.com/jinmukeji/*
 
 # Install all the build and lint dependencies
 setup:
-	# TODO: 官方 golangci-lint 发行包不兼容 go 1.13，需要使用手动编译的版本
-	#curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh
-	GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
-	[ -d "./bin" ] || mkdir -p ./bin
-	cp $(GOPATH)/bin/golangci-lint ./bin/
+	# golangci-lint
+	brew install golangci-lint
+	# misspell
 	# curl -L https://git.io/misspell | sh
-	go mod download
 .PHONY: setup
 
 # Update go packages
-go-update:
+go-mod-update:
+	@echo "Checking updated go packages..."
+	@go list -u -m all
 	@echo "Updating go packages..."
 	@go get -u -t ./...
-	@echo "go mod tidy..."
 	@$(MAKE) go-mod-tidy
 .PHONY: go-update
 
 # Clean go.mod
 go-mod-tidy:
 	@go mod tidy -v
-	# @git --no-pager diff HEAD
-	# @git --no-pager diff-index --quiet HEAD
+	# git --no-pager diff HEAD
+	# git --no-pager diff-index --quiet HEAD
 .PHONY: go-mod-tidy
 
 # Reset go.mod
@@ -37,8 +35,6 @@ go-mod-reset:
 	@rm -f go.sum
 	@sed -i '' -e '/^require/,/^)/d' go.mod
 	@go mod tidy -v
-	# @git --no-pager diff HEAD
-	# @git --no-pager diff-index --quiet HEAD
 .PHONY: go-mod-tidy
 
 generate:
@@ -52,7 +48,7 @@ format:
 
 # Run all the linters
 lint:
-	@./bin/golangci-lint run
+	@golangci-lint run
 .PHONY: lint
 
 # Go build all
