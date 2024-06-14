@@ -12,9 +12,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	sqsworker "github.com/jinmukeji/go-pkg/v4/sqs-worker"
+	sqsworker "github.com/jinmukeji/go-pkg/v2/sqs-worker"
 
-	"github.com/jinmukeji/go-pkg/v4/log"
+	"github.com/jinmukeji/go-pkg/v2/log"
 )
 
 const (

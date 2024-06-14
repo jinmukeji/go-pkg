@@ -1,4 +1,4 @@
-module github.com/jinmukeji/go-pkg/v4
+module github.com/jinmukeji/go-pkg/v2
 
 go 1.18
 
